@@ -6,17 +6,18 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/empresa")
 public class EmpresaController {
 
     @Autowired
     private EmpresaRepository empresaRepo;
 
-    @GetMapping("/empresa")
+    @GetMapping
     public List<Empresa> all() {
         return empresaRepo.findAll();
     }
 
-    @PutMapping("/empresa/{id}") // ACTUALIZACION
+    @PutMapping("/{id}") // ACTUALIZACION
     public Empresa replaceEmpresa(@RequestBody Empresa newEmpresa, @PathVariable String id){
 
         return empresaRepo.findById(id) // actualizacion pero si no encuentra con el id lo crea
