@@ -13,6 +13,7 @@ import java.util.Collection;
 @AllArgsConstructor()
 public class EmpleadoDTO {
 
+        // los que no son @NotBlank pueden ser null o vacio.
         @NotBlank(message = "el COD_DISTRITO es obligatorio") // ** no NULL y no vacio
         private String codDistrito;
         @NotBlank(message = "el COD_ESTADO es obligatorio") // **

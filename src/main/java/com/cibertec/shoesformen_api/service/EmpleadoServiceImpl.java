@@ -1,6 +1,7 @@
 package com.cibertec.shoesformen_api.service;
 
-import com.cibertec.shoesformen_api.exception.EmpleadoNotFoundException;
+import com.cibertec.shoesformen_api.exception.EntidadNotFoundException;
+import com.cibertec.shoesformen_api.exception.ListEmptyException;
 import com.cibertec.shoesformen_api.model.Distrito;
 import com.cibertec.shoesformen_api.model.Empleado;
 import com.cibertec.shoesformen_api.model.Estado;
@@ -11,11 +12,8 @@ import com.cibertec.shoesformen_api.repository.EmpleadoRepository;
 import com.cibertec.shoesformen_api.repository.EstadoRepository;
 import com.cibertec.shoesformen_api.repository.RolRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -32,21 +30,12 @@ public class EmpleadoServiceImpl implements EmpleadoService{
     @Autowired
     private RolRepository rolRepo;
 
-    //@Override
-    //public ResponseEntity<Object> listar() {
-    //    List<Empleado> lista = empleadoRepo.findAll();
-    //    if(lista.isEmpty()){
-    //        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    //    }
-    //    return new ResponseEntity<>(lista, HttpStatus.OK);
-    //}
-
 
     @Override
-    public List<Empleado> listar() throws EmpleadoNotFoundException {
+    public List<Empleado> listar() throws ListEmptyException {
         List<Empleado> lista = empleadoRepo.findAll();
         if(lista.isEmpty()){
-            throw new EmpleadoNotFoundException("lista vacia");
+            throw new ListEmptyException("lista Empleado vacio");
         }
         return lista;
     }
@@ -62,20 +51,45 @@ public class EmpleadoServiceImpl implements EmpleadoService{
     }
 
     @Override
-    public Empleado guardar(EmpleadoDTO dto) throws IllegalArgumentException{
+    public Empleado guardar(Empleado empleado) throws IllegalArgumentException, EntidadNotFoundException{
+        return empleadoRepo.save(empleado);
+    }
 
-        // findById cuando el id es null -> IllegalArgumentException [por defecto]
-        // findById cuando no retorna nada porque no existe nada con ese ID. OPTIONAL -> XXException
-        //  SQL UNIQUE ->
+    @Override
+    public Optional<Empleado> getEmpleadoByCodigo(String codigo) throws EntidadNotFoundException {
+        return empleadoRepo.findById(codigo);
+    }
 
-        Distrito dis = distritoRepo.findById(dto.getCodDistrito()).orElseThrow(() -> new SecurityException("Invalido id NULL"));
-        Estado est = estadoRepo.findById(dto.getCodEstado()).orElseThrow(() -> new IllegalArgumentException("Invalido id NULL"));
-        List<Rol> roles = Arrays.asList(rolRepo.findById("RL02").orElseThrow(() -> new IllegalArgumentException("")));
+    @Override
+    public String createNewCodigo() {
+        String codigo_ultimo = empleadoRepo.getUltimoCodigo();
+        String codigo_nuevo = "EM10001";
+        if(codigo_ultimo != null){
+            return codigo_ultimo;
+        }
+        return codigo_nuevo;
+    }
+
+    @Override
+    public Empleado buildEmpleado(EmpleadoDTO dto) throws IllegalArgumentException, EntidadNotFoundException {
+
+        // 1. que todos los datos sean validados -> @Valid
+        // 1.5. que los ID no sean NULL -> IllegalArgumentException --> NO PASA
+        // 2. que los codigos permitan encontrar ah las entidades -> EntidadNotFoundException
+        // 3. que los campos en la BD no se repitan -> SQL
+        // 4. que Xodo salga correcto -> Controller OK 201.
+
+        Optional<Distrito> dis = distritoRepo.findById(dto.getCodDistrito());
+        Optional<Estado> est = estadoRepo.findById(dto.getCodEstado());
+        Optional<Rol> rol = rolRepo.findById("RL02");
+        if(dis.isEmpty() || est.isEmpty() || rol.isEmpty()){
+            throw new EntidadNotFoundException("Codigos invalidos");
+        }
 
         Empleado empleado = new Empleado(
-                this.getUltimoCodigo(),
-                dis,
-                est,
+                //this.getUltimoCodigo(),
+                dis.get(),
+                est.get(),
                 dto.getNombre(),
                 dto.getApellidos(),
                 dto.getDni(),
@@ -84,23 +98,8 @@ public class EmpleadoServiceImpl implements EmpleadoService{
                 dto.getEmail(),
                 dto.getUsuario(),
                 dto.getContrasena(),
-                roles);
-        return empleadoRepo.save(empleado);
-    }
-
-    @Override
-    public Optional<Empleado> getEmpleadoByCodigo(String codigo) {
-        return empleadoRepo.findById(codigo);
-    }
-
-    @Override
-    public String getUltimoCodigo() {
-        String codigo_ultimo = empleadoRepo.getUltimoCodigo();
-        String codigo_nuevo = "EM10001";
-        if(codigo_ultimo != null){
-            return codigo_ultimo;
-        }
-        return codigo_nuevo;
+                Arrays.asList(rol.get()));
+        return empleado;
     }
 
 }

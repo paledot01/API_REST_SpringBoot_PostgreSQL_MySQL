@@ -1,6 +1,8 @@
 package com.cibertec.shoesformen_api.controller;
 
 import com.cibertec.shoesformen_api.exception.EmpleadoNotFoundException;
+import com.cibertec.shoesformen_api.exception.EntidadNotFoundException;
+import com.cibertec.shoesformen_api.exception.ListEmptyException;
 import com.cibertec.shoesformen_api.model.Empleado;
 import com.cibertec.shoesformen_api.model.dto.EmpleadoDTO;
 import com.cibertec.shoesformen_api.repository.DistritoRepository;
@@ -12,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,36 +38,30 @@ public class EmpleadoController {
     @Autowired
     private EstadoRepository estadoRepo;
 
+
     @GetMapping() // al entrar a la ruta principal "/empleados" se activa el metodo GET sin ruta especificada.
-    public ResponseEntity<List<Empleado>> getAll() throws EmpleadoNotFoundException {
+    public ResponseEntity<List<Empleado>> getAll() throws ListEmptyException{
         return ResponseEntity.ok(empleadoServ.listar());
     }
 
-
     @PostMapping // post por defecto
-    public ResponseEntity<Empleado> newEmpleado (@RequestBody @Valid EmpleadoDTO dto){ /** sda  **/
-        return new ResponseEntity<>(empleadoServ.guardar(dto), HttpStatus.CREATED);
+    public ResponseEntity<Empleado> newEmpleado (@RequestBody @Valid EmpleadoDTO dto) throws IllegalArgumentException, EntidadNotFoundException {
+        Empleado empleado = empleadoServ.buildEmpleado(dto); // -> construyo el empleado sin cod_empleado
+        empleado.setCodEmpleado(empleadoServ.createNewCodigo()); // -> insertamos el codigo que debe tener
+        return new ResponseEntity<>(empleadoServ.guardar(empleado), HttpStatus.CREATED); // -> insertamos el empleado
     }
 
-//    @PutMapping("/{id}") // ACTUALIZACION, su objetivo es actualizar no crear, por eso debe verificar si existe.
-//    public ResponseEntity replaceEmpleado(@RequestBody Empleado newEmpleado, @PathVariable String id){ // imaginate que el id no coincida con el de empleado que envia. Ademas el empleado no deberia venir con ID, ¿porque?
-//        return empleadoServ.getEmpleadoByCodigo(id)
-//                .map(empleado ->{
-//                    empleado.setDistrito(newEmpleado.getDistrito());
-//                    empleado.setEstado(newEmpleado.getEstado());
-//                    empleado.setNombre(newEmpleado.getNombre());
-//                    empleado.setApellidos(newEmpleado.getApellidos());
-//                    empleado.setDni(newEmpleado.getDni());
-//                    empleado.setDireccion(newEmpleado.getDireccion());
-//                    empleado.setTelefono(newEmpleado.getTelefono());
-//                    empleado.setEmail(newEmpleado.getEmail());
-//                    empleado.setUsuario(newEmpleado.getUsuario());
-//                    empleado.setContrasena(newEmpleado.getContrasena());
-//                    return new ResponseEntity(empleadoServ.guardar(empleado), HttpStatus.OK);
-//                }).orElseGet(() -> {
-//                    return new ResponseEntity("Empleado no encontrado", HttpStatus.NOT_FOUND);
-//                });
-//    }
+    @PutMapping("/{id}") // ACTUALIZACION, su objetivo es actualizar no crear, por eso debe verificar si existe.
+    public ResponseEntity replaceEmpleado(@RequestBody @Valid EmpleadoDTO dto, @PathVariable String id) throws IllegalArgumentException, EntidadNotFoundException{ // imaginate que el id no coincida con el de empleado que envia. Ademas el empleado no deberia venir con ID, ¿porque?
+
+        if(empleadoServ.getEmpleadoByCodigo(id).isPresent() ){
+            Empleado empleado = empleadoServ.buildEmpleado(dto);
+            empleado.setCodEmpleado(id);
+            return new ResponseEntity(empleadoServ.guardar(empleado), HttpStatus.OK);
+        } else {
+            throw new EntidadNotFoundException("Empleado no encontrado");
+        }
+    }
 
 
 

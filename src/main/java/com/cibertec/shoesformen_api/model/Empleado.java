@@ -44,4 +44,21 @@ public class Empleado implements Serializable {
     )
     private Collection<Rol> roles; // este campo no esta realmente en la tabla
 
+    public Empleado(Distrito distrito, Estado estado, String nombre, String apellidos, String dni,
+                    String direccion, String telefono, String email, String usuario, String contrasena, Collection<Rol> roles) {
+        super();
+        this.codEmpleado = "";
+        this.distrito = distrito;
+        this.estado = estado;
+        this.nombre = nombre;
+        this.apellidos = apellidos;
+        this.dni = dni;
+        this.direccion = direccion;
+        this.telefono = telefono;
+        this.email = email;
+        this.usuario = usuario;
+        this.contrasena = contrasena;
+        this.roles = roles;
+    }
+
 }
