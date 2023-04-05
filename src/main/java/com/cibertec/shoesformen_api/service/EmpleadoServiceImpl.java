@@ -1,5 +1,7 @@
 package com.cibertec.shoesformen_api.service;
 
+import com.cibertec.shoesformen_api.a_empresa.Empresa;
+import com.cibertec.shoesformen_api.a_empresa.EmpresaRepository;
 import com.cibertec.shoesformen_api.exception.EntidadNotFoundException;
 import com.cibertec.shoesformen_api.exception.ListEmptyException;
 import com.cibertec.shoesformen_api.model.Distrito;
@@ -22,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 
-import javax.management.JMRuntimeException;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -39,6 +40,8 @@ public class EmpleadoServiceImpl implements EmpleadoService{
     private EstadoRepository estadoRepo;
     @Autowired
     private RolRepository rolRepo;
+    @Autowired
+    private EmpresaRepository empresaRepo;
 
 
     @Override
@@ -67,7 +70,7 @@ public class EmpleadoServiceImpl implements EmpleadoService{
 
     @Override
     public String createNewCodigo() {
-        String codigo_ultimo = empleadoRepo.getUltimoCodigo();
+        String codigo_ultimo = empleadoRepo.getNuevoCodigo();
         String codigo_nuevo = "EM10001";
         if(codigo_ultimo != null){
             return codigo_ultimo;
@@ -118,14 +121,16 @@ public class EmpleadoServiceImpl implements EmpleadoService{
         String fecha1 = formato1.format(fecha);
         String fecha2 = formato2.format(fecha);
 
-        String imagen = "logo_reporte_2.png";
-        parametros.put("imagen_logo","src/main/resources/static/img/" + imagen);
-        parametros.put("nombre_empresa","SHOES FOR MEN");
+        Empresa empresa = empresaRepo.findById("EP1").orElseThrow(() -> new EntidadNotFoundException("EP1"));
+        //String imagen = "logo_reporte_01.png";
+        //parametros.put("imagen_logo","src/main/resources/static/img/" + imagen);
+        parametros.put("imagen_logo",empresa.getImagen());
+        parametros.put("nombre_empresa",empresa.getNombre().toUpperCase());
         parametros.put("direccion_empresa","AV. URUGUAY N 000 ");
         parametros.put("distrito_empresa","SAN ISIDRO");
         parametros.put("nombre_empleado","KEVIN B");
-        parametros.put("ruc_empresa","55555555555");
-        parametros.put("telefono_empresa","777-7777");
+        parametros.put("ruc_empresa",empresa.getRuc());
+        parametros.put("telefono_empresa",empresa.getTelefono());
         parametros.put("fecha_generacion", fecha1);
         parametros.put("DataEmpleado", dataSource);
 
@@ -144,9 +149,9 @@ public class EmpleadoServiceImpl implements EmpleadoService{
         else if(tipo.equalsIgnoreCase("excel")) {
             JRXlsxExporter exporter = new JRXlsxExporter(); // la configuracion se hace en el mismo JASPER STUDIO
             exporter.setExporterInput(new SimpleExporterInput(jasperPrint)); //
-            response.setContentType("application/octet-stream");
             exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(response.getOutputStream()));
-            response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=listaEmpleado_" + fecha2 + ".xlsx");
+            response.setContentType("application/vnd.ms-excel");
+            response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=listaEmpleado_" + fecha2 + ".xlsx");
             exporter.exportReport();
         }
 

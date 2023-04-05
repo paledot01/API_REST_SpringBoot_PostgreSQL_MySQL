@@ -1,15 +1,12 @@
 package com.cibertec.shoesformen_api.service;
 
-import com.cibertec.shoesformen_api.exception.EmpleadoNotFoundException;
 import com.cibertec.shoesformen_api.exception.EntidadNotFoundException;
 import com.cibertec.shoesformen_api.exception.ListEmptyException;
 import com.cibertec.shoesformen_api.model.Empleado;
 import com.cibertec.shoesformen_api.model.dto.EmpleadoDTO;
 import jakarta.servlet.http.HttpServletResponse;
 import net.sf.jasperreports.engine.JRException;
-import org.springframework.http.ResponseEntity;
 
-import javax.management.JMRuntimeException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;

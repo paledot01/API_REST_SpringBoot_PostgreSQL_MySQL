@@ -1,6 +1,5 @@
 package com.cibertec.shoesformen_api.controller;
 
-import com.cibertec.shoesformen_api.exception.EmpleadoNotFoundException;
 import com.cibertec.shoesformen_api.exception.EntidadNotFoundException;
 import com.cibertec.shoesformen_api.exception.ListEmptyException;
 import com.cibertec.shoesformen_api.model.Empleado;
@@ -13,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import net.sf.jasperreports.engine.JRException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -74,14 +74,15 @@ public class EmpleadoController {
         }
     }
 
-    @GetMapping("/rpt_EXCEL")
-    private ResponseEntity<Void> reporteEmpleadoEXCEL(HttpServletResponse response) throws JRException, IOException {
+    @GetMapping(value = "/rpt_EXCEL", produces = MediaType.MULTIPART_FORM_DATA_VALUE)
+    private ResponseEntity<Resource> reporteEmpleadoEXCEL(HttpServletResponse response) throws JRException, IOException {
         empleadoServ.exportarReporte("excel", response);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping(value = "/rpt_PDF", produces = MediaType.APPLICATION_PDF_VALUE)
     private ResponseEntity<Void> reporteEmpleadoPDF(HttpServletResponse response) throws JRException,IOException{
+        response.setHeader("","");
         empleadoServ.exportarReporte("pdf", response);
         return ResponseEntity.ok().build();
     }
