@@ -6,5 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface DistritoRepository extends JpaRepository<Distrito, String> {
-
+    // Paginacion: extender de "PagingAndSortingRepository" o de "JpaRepository" porque
+    //             este ya extiende del primero.
 }

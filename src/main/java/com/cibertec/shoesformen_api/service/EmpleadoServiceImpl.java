@@ -4,6 +4,7 @@ import com.cibertec.shoesformen_api.a_empresa.Empresa;
 import com.cibertec.shoesformen_api.a_empresa.EmpresaRepository;
 import com.cibertec.shoesformen_api.exception.EntidadNotFoundException;
 import com.cibertec.shoesformen_api.exception.ListEmptyException;
+import com.cibertec.shoesformen_api.exception.ValidacionException;
 import com.cibertec.shoesformen_api.model.Distrito;
 import com.cibertec.shoesformen_api.model.Empleado;
 import com.cibertec.shoesformen_api.model.Estado;
@@ -14,6 +15,8 @@ import com.cibertec.shoesformen_api.repository.EmpleadoRepository;
 import com.cibertec.shoesformen_api.repository.EstadoRepository;
 import com.cibertec.shoesformen_api.repository.RolRepository;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
@@ -42,13 +45,15 @@ public class EmpleadoServiceImpl implements EmpleadoService{
     private RolRepository rolRepo;
     @Autowired
     private EmpresaRepository empresaRepo;
+    @Autowired
+    private Validator validator;
 
 
     @Override
-    public List<Empleado> listar() throws ListEmptyException {
+    public List<Empleado> listar() {
         List<Empleado> lista = empleadoRepo.findAll();
         if(lista.isEmpty()){
-            throw new ListEmptyException("lista Empleado vacio");
+            throw new ListEmptyException("EMPLEADO");
         }
         return lista;
     }
@@ -59,27 +64,34 @@ public class EmpleadoServiceImpl implements EmpleadoService{
     }
 
     @Override
-    public Empleado guardar(Empleado empleado) throws IllegalArgumentException, EntidadNotFoundException{
+    public Empleado guardar(Empleado empleado) throws IllegalArgumentException{
         return empleadoRepo.save(empleado);
     }
 
     @Override
-    public Optional<Empleado> getEmpleadoByCodigo(String codigo) throws EntidadNotFoundException {
+    public Optional<Empleado> getEmpleadoByCodigo(String codigo) throws IllegalArgumentException {
         return empleadoRepo.findById(codigo);
     }
 
     @Override
-    public String createNewCodigo() {
-        String codigo_ultimo = empleadoRepo.getNuevoCodigo();
-        String codigo_nuevo = "EM10001";
-        if(codigo_ultimo != null){
-            return codigo_ultimo;
-        }
-        return codigo_nuevo;
+    public EmpleadoDTO buildEmpleadoDTO(Empleado emp) {
+        EmpleadoDTO dto = new EmpleadoDTO(
+                emp.getDistrito().getCodDistrito(),
+                emp.getEstado().getCodEstado(),
+                emp.getNombre(),
+                emp.getApellidos(),
+                emp.getDni(),
+                emp.getDireccion(),
+                emp.getTelefono(),
+                emp.getEmail(),
+                emp.getUsuario(),
+                emp.getContrasena()
+        );
+        return dto;
     }
 
     @Override
-    public Empleado buildEmpleado(EmpleadoDTO dto) throws IllegalArgumentException, EntidadNotFoundException {
+    public Empleado buildEmpleado(EmpleadoDTO dto) throws IllegalArgumentException { // valida y crea el empleado pero sin CODIGO DEL EMPLEADO
 
         // 1. que todos los datos sean validados -> @Valid
         // 1.5. que los ID no sean NULL -> IllegalArgumentException --> NO PASA
@@ -87,11 +99,18 @@ public class EmpleadoServiceImpl implements EmpleadoService{
         // 3. que los campos en la BD no se repitan -> SQL
         // 4. que Xodo salga correcto -> Controller OK 201.
 
+        Set<ConstraintViolation<EmpleadoDTO>> restricciones = validator.validate(dto);
+        if(!restricciones.isEmpty()) throw new ValidacionException(restricciones); // excepcion personalizada
+
         Optional<Distrito> dis = distritoRepo.findById(dto.getCodDistrito());
         Optional<Estado> est = estadoRepo.findById(dto.getCodEstado());
         Optional<Rol> rol = rolRepo.findById("RL02");
-        if(dis.isEmpty() || est.isEmpty() || rol.isEmpty()){
-            throw new EntidadNotFoundException("Codigos invalidos");
+        if(dis.isEmpty()){
+            throw new EntidadNotFoundException("Distrito", dto.getCodDistrito());
+        } else if (est.isEmpty()) {
+            throw new EntidadNotFoundException("Estado", dto.getCodEstado());
+        } else if (rol.isEmpty()) {
+            throw new EntidadNotFoundException("Rol", "RL02");
         }
 
         Empleado empleado = new Empleado(
@@ -111,6 +130,16 @@ public class EmpleadoServiceImpl implements EmpleadoService{
     }
 
     @Override
+    public String createNewCodigo() {
+        String codigo_nuevo_bd = empleadoRepo.getNuevoCodigo();
+        String codigo_nuevo = "EM10001";
+        if(codigo_nuevo_bd != null){
+            return codigo_nuevo_bd;
+        }
+        return codigo_nuevo;
+    }
+
+    @Override
     public void exportarReporte(String tipo, HttpServletResponse response) throws JRException, IOException {
 
         JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(empleadoRepo.listaPOJO());
@@ -121,7 +150,7 @@ public class EmpleadoServiceImpl implements EmpleadoService{
         String fecha1 = formato1.format(fecha);
         String fecha2 = formato2.format(fecha);
 
-        Empresa empresa = empresaRepo.findById("EP1").orElseThrow(() -> new EntidadNotFoundException("EP1"));
+        Empresa empresa = empresaRepo.findById("EP1").orElseThrow(() -> new EntidadNotFoundException("Empresa","EP1"));
         //String imagen = "logo_reporte_01.png";
         //parametros.put("imagen_logo","src/main/resources/static/img/" + imagen);
         parametros.put("imagen_logo",empresa.getImagen());
@@ -136,7 +165,6 @@ public class EmpleadoServiceImpl implements EmpleadoService{
 
         JasperReport compileReport = JasperCompileManager.compileReport(new FileInputStream("src/main/resources/reporte_jasper/rpt_empleado.jrxml"));
         JasperPrint jasperPrint = JasperFillManager.fillReport(compileReport, parametros, new JREmptyDataSource());
-
 
         if(tipo.equalsIgnoreCase("pdf")) {
             JRPdfExporter exporter = new JRPdfExporter();

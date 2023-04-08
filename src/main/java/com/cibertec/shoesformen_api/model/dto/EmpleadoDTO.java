@@ -36,8 +36,4 @@ public class EmpleadoDTO {
         private String contrasena;
         //private Collection<String> codRoles;
 
-        //
-        // no encuentra el estado ni el distrito con le codigo enviado
-        // datos, validador, codigo existentes, pero la BD detecta campos que deberia ser unico repetidos.
-
 }

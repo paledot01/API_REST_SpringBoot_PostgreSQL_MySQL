@@ -8,8 +8,8 @@ import lombok.Data;
 public class EmpleadoPOJO {
 
     private String codEmpleado;
-    private String distrito; // --
-    private String estado; // --
+    private String distrito; // -- no es el codigo si no el nombre
+    private String estado; // -- no es el codigo si no ell nombre
     private String nombre;
     private String apellidos;
     private String dni;

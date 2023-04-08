@@ -20,7 +20,7 @@ import java.util.Objects;
 @EnableJpaRepositories(
         entityManagerFactoryRef = "msqlEntityManagerFactory", // <----
         transactionManagerRef = "msqlTransactionManager", // <----
-        basePackages = { "com.cibertec.shoesformen_api.a_empresa" } // <-- REPOSITORIO Y MODEL EN MI ESTE CASO ESTAN EL MISMO PAQUETE
+        basePackages = { "com.cibertec.shoesformen_api.a_empresa" } // <-- REPOSITORIO Y MODEL EN MI CASO ESTAN EL MISMO PAQUETE
 )
 public class MySQLConfig {
 

@@ -1,7 +1,5 @@
 package com.cibertec.shoesformen_api.service;
 
-import com.cibertec.shoesformen_api.exception.EntidadNotFoundException;
-import com.cibertec.shoesformen_api.exception.ListEmptyException;
 import com.cibertec.shoesformen_api.model.Empleado;
 import com.cibertec.shoesformen_api.model.dto.EmpleadoDTO;
 import jakarta.servlet.http.HttpServletResponse;
@@ -13,12 +11,16 @@ import java.util.Optional;
 
 public interface EmpleadoService {
 
-    public List<Empleado> listar() throws ListEmptyException;
+    // IllegalArgumentException : salta cuando un ID es null, pero en este caso no es necesario colocarlo porque
+    //                            @Valid y EntidadNotFoundException ya controlan de manera indirecta que esta
+    //                            excepcion no pueda ocurrir. Antes saltarian primero cualquiera de estas dos.
+    public List<Empleado> listar();
     public void eliminarByCodigo(String codigo) throws IllegalArgumentException;
-    public Empleado guardar(Empleado empleado) throws IllegalArgumentException, EntidadNotFoundException;
-    public Optional<Empleado> getEmpleadoByCodigo(String codigo) throws EntidadNotFoundException;
+    public Empleado guardar(Empleado empleado) throws IllegalArgumentException;
+    public Optional<Empleado> getEmpleadoByCodigo(String codigo) throws IllegalArgumentException;
+    public EmpleadoDTO buildEmpleadoDTO (Empleado emp);
+    public Empleado buildEmpleado(EmpleadoDTO dto) throws IllegalArgumentException;
     public String createNewCodigo();
-    public Empleado buildEmpleado(EmpleadoDTO dto) throws EntidadNotFoundException;
     public void exportarReporte(String tipo, HttpServletResponse response) throws JRException, IOException;
 
 }
