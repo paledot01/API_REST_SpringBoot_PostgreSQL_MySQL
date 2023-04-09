@@ -4,7 +4,6 @@ import com.cibertec.shoesformen_api.exception.EntidadNotFoundException;
 import com.cibertec.shoesformen_api.model.Empleado;
 import com.cibertec.shoesformen_api.model.dto.EmpleadoDTO;
 import com.cibertec.shoesformen_api.repository.DistritoRepository;
-import com.cibertec.shoesformen_api.repository.EmpleadoRepository;
 import com.cibertec.shoesformen_api.repository.EstadoRepository;
 import com.cibertec.shoesformen_api.service.EmpleadoService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -33,16 +32,24 @@ public class EmpleadoController {
     @Autowired
     private EmpleadoService empleadoServ;
     @Autowired
-    private EmpleadoRepository empleadoRepo;
-    @Autowired
     private DistritoRepository distritoRepo;
     @Autowired
     private EstadoRepository estadoRepo;
 
+//    LISTA NORMAL
+//    @GetMapping() // al entrar a la ruta principal "/empleados" se activa el metodo GET sin ruta especificada.
+//    public ResponseEntity<List<Empleado>> getAll() {
+//        return ResponseEntity.ok(empleadoServ.listar());
+//    }
 
-    @GetMapping() // al entrar a la ruta principal "/empleados" se activa el metodo GET sin ruta especificada.
-    public ResponseEntity<List<Empleado>> getAll() {
-        return ResponseEntity.ok(empleadoServ.listar());
+    @GetMapping() // LISTAR CON PAGINACION
+    public ResponseEntity<List<Empleado>> getAll(
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "3") Integer size,
+            @RequestParam(defaultValue = "nombre") String sort)
+    {
+        List<Empleado> lista = empleadoServ.listar(page, size, sort);
+        return new ResponseEntity<List<Empleado>>(lista, HttpStatus.OK);
     }
 
     @PostMapping // post por defecto

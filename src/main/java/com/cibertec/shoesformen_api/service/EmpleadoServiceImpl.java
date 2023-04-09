@@ -3,7 +3,6 @@ package com.cibertec.shoesformen_api.service;
 import com.cibertec.shoesformen_api.a_empresa.Empresa;
 import com.cibertec.shoesformen_api.a_empresa.EmpresaRepository;
 import com.cibertec.shoesformen_api.exception.EntidadNotFoundException;
-import com.cibertec.shoesformen_api.exception.ListEmptyException;
 import com.cibertec.shoesformen_api.exception.ValidacionException;
 import com.cibertec.shoesformen_api.model.Distrito;
 import com.cibertec.shoesformen_api.model.Empleado;
@@ -24,6 +23,11 @@ import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 
@@ -48,14 +52,26 @@ public class EmpleadoServiceImpl implements EmpleadoService{
     @Autowired
     private Validator validator;
 
+//    LISTA NORMAL
+//    @Override
+//    public List<Empleado> listar() {
+//        List<Empleado> lista = empleadoRepo.findAll();
+//        if(lista.isEmpty()){
+//            throw new ListEmptyException("EMPLEADO");
+//        }
+//        return lista;
+//    }
 
-    @Override
-    public List<Empleado> listar() {
-        List<Empleado> lista = empleadoRepo.findAll();
-        if(lista.isEmpty()){
-            throw new ListEmptyException("EMPLEADO");
+    @Override // LISTAR CON PAGINACION
+    public List<Empleado> listar(Integer page, Integer size, String sort) throws PropertyReferenceException {
+        Pageable paging = PageRequest.of(page, size, Sort.by(sort));
+        Page<Empleado> pagedResult = empleadoRepo.findAll(paging); // -- puede generar un error si no encuentra la propiedad de la Entida
+        List<Empleado> lista;
+        if (pagedResult.hasContent()){
+            return pagedResult.getContent();
+        } else {
+            return new ArrayList<Empleado>();
         }
-        return lista;
     }
 
     @Override

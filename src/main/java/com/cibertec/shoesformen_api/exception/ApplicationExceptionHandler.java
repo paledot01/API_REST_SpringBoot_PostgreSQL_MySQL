@@ -2,6 +2,7 @@ package com.cibertec.shoesformen_api.exception;
 
 import com.cibertec.shoesformen_api.model.dto.EmpleadoDTO;
 import jakarta.validation.ConstraintViolation;
+import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -27,6 +28,15 @@ public class ApplicationExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({IllegalArgumentException.class})
     public Map<String, String> handleFoundException(IllegalArgumentException ex) {
+        Map<String, String> errorMap = new HashMap<>();
+        errorMap.put("errorMessage", ex.getMessage());
+        return errorMap;
+    }
+
+    // Cuando no encuentra la propiedad de una entidad
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler({PropertyReferenceException.class})
+    public Map<String, String> handlePropertyFoundException(PropertyReferenceException ex) {
         Map<String, String> errorMap = new HashMap<>();
         errorMap.put("errorMessage", ex.getMessage());
         return errorMap;
