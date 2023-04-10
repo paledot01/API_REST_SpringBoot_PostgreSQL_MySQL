@@ -15,10 +15,7 @@ Credenciales iniciales:
 [img_1]: ./screenshot/img01_BD.png
 
 ---
-
-<br>
-
-### Listar Empleado
+### :white_medium_square: Listar Empleado
 Para listar los empleados registrados podemos usar de manera opcional los parametros:
 - page : página que se mostrará.
 - size : número de elementos por página.
@@ -67,9 +64,8 @@ Response: `Estatus code: 200 OK`
 ]
 ```
 
-<br>
-
-### Registrar Empleado
+#
+### :white_medium_square: Registrar Empleado
 Para registrar un empleado, no se incluye el "codEmpleado" ni "roles" porque estos se obtienen de manera interna. Los campos "dni", "direccion", "telefono" y "email" son opcionales, pero si los incluimos en el Body deberan cumplir las resticciones respectivas.
 
 Request: 
@@ -97,10 +93,8 @@ Response: `Estatus code: 201 Created`
 }
 ```
 
-<br>
-
-
-### Actualizar Empleado
+#
+### :white_medium_square: Actualizar Empleado
 Para actualizar un empleado debemos enviar solo los campos que queremos modificar. Estos campos enviados tambien deben de cumplir con las restricciones.
 
 Request: 
@@ -121,9 +115,8 @@ Response: `Estatus code: 200 OK`
 }
 ```
 
-<br>
-
-### Eliminar Empleado
+#
+### :white_medium_square: Eliminar Empleado
 Para eliminar un empleado solo enviamos en la URL el codigo de un Empleado que se encuentre registrado.
 
 Request: 
@@ -132,9 +125,8 @@ Request:
 ```
 Response: `Estatus code: 200 OK`
 
-<br>
-
-### Generar Reporte Empleado en PDF
+#
+### :white_medium_square: Generar Reporte Empleado en PDF
 
 Request: 
 ```
@@ -142,17 +134,14 @@ Request:
 ```
 Response: `Estatus code: 200 OK`
 
-<br>
-
-### Generar Reporte Empleado en EXCEL
+#
+### :white_medium_square: Generar Reporte Empleado en EXCEL
 
 Request: 
 ```
 [ GET ]  http://localhost:8080/empleados/rpt_EXCEL
 ```
 Response: `Estatus code: 200 OK`
-
-<br>
 
 ---
 ### Herramientas utilizadas:
@@ -172,5 +161,4 @@ Response: `Estatus code: 200 OK`
 - Hibernate (ORM)
 - JPQL
 - Lombok
----
 
