@@ -17,7 +17,6 @@ import java.util.Objects;
 @RestControllerAdvice
 public class ApplicationExceptionHandler {
 
-
     // Cuando la lista que devuelve esta vacia.
     @ExceptionHandler({ListEmptyException.class})
     public ResponseEntity<Objects> handleListEmptyException(ListEmptyException ex) {
@@ -33,7 +32,7 @@ public class ApplicationExceptionHandler {
         return errorMap;
     }
 
-    // Cuando no encuentra la propiedad de una entidad
+    // Cuando no encuentra la propiedad dentro de la entidad respectiva
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({PropertyReferenceException.class})
     public Map<String, String> handlePropertyFoundException(PropertyReferenceException ex) {

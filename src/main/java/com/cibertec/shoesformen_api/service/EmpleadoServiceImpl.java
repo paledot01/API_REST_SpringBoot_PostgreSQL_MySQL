@@ -29,6 +29,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.FileInputStream;
@@ -51,6 +52,8 @@ public class EmpleadoServiceImpl implements EmpleadoService{
     private EmpresaRepository empresaRepo;
     @Autowired
     private Validator validator;
+    @Autowired
+    private PasswordEncoder encriptador;
 
 //    LISTA NORMAL
 //    @Override
@@ -140,7 +143,7 @@ public class EmpleadoServiceImpl implements EmpleadoService{
                 dto.getTelefono(),
                 dto.getEmail(),
                 dto.getUsuario(),
-                dto.getContrasena(),
+                encriptador.encode(dto.getContrasena()), // -> encriptamos la contraseña
                 Arrays.asList(rol.get()));
         return empleado;
     }

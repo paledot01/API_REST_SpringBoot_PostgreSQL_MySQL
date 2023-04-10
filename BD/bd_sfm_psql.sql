@@ -196,11 +196,13 @@ INSERT INTO rol (cod_rol, nombre_rol) VALUES ('RL01','ROLE_ADMIN');
 INSERT INTO rol (cod_rol, nombre_rol) VALUES ('RL02','ROLE_USER');
 
 -- EMPLEADO -> SELECT * FROM empleado;
-INSERT INTO empleado (cod_empleado,cod_distrito,cod_estado,nombre,apellidos,dni,direccion,telefono,email,usuario,contrasena) VALUES ('EM10001','DI01','ES2','KEVIN','B','00000000','DIRECCION','999999999','paledot01@gmail.com','kevinB','$2a$10$Jtfxa0EuEjZrfQ4OvR4WbuqD00OBIfIp.5Sv33A7G8ya3xTI542nq');
+INSERT INTO empleado (cod_empleado,cod_distrito,cod_estado,nombre,apellidos,dni,direccion,telefono,email,usuario,contrasena) VALUES ('EM10001','DI01','ES2','KEVIN','B','00000000','DIRECCION','9999999','paledot01@gmail.com','kevinB','$2a$10$Jtfxa0EuEjZrfQ4OvR4WbuqD00OBIfIp.5Sv33A7G8ya3xTI542nq'); --pass: admin
+INSERT INTO empleado (cod_empleado,cod_distrito,cod_estado,nombre,apellidos,dni,direccion,telefono,email,usuario,contrasena) VALUES ('EM10002','DI02','ES2','PEDRO','C','11111111','DIRECCION2','8888888','pedro@gmail.com','pedroC','$2a$10$XoXoVkCDdDGeMHkDfM0/8.Q6Einje7.SWZiyggAv/XMMNKw89wFI2'); -- pass: 123
 
 -- EMPLEADO-ROL -> SELECT * FROM empleado_rol;
 INSERT INTO empleado_rol (cod_rol,cod_empleado) VALUES ('RL01','EM10001');
 INSERT INTO empleado_rol (cod_rol,cod_empleado) VALUES ('RL02','EM10001');
+INSERT INTO empleado_rol (cod_rol,cod_empleado) VALUES ('RL02','EM10002');
 
 -- MARCA -> SELECT * FROM marca;  --> DELETE FROM marca WHERE cod_marca = 'MA10002';  --> UPDATE marca SET field='C', field2='Z' WHERE id=3;
 INSERT INTO marca (cod_marca, nombre_marca) VALUES ('MA10001','Calimod');

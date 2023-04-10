@@ -16,3 +16,4 @@ CREATE TABLE empresa(
 INSERT INTO empresa (codigo,ruc,nombre,direccion,distrito,telefono,imagen) VALUE ('EP1','44445555777','Shoes For Men','Av. Carlos Izaguirre 233','Independencia','000-0000','https://raw.githubusercontent.com/paledot02/Img_Calzados/main/logo_reporte_01.png');
 -- https://raw.githubusercontent.com/paledot02/Img_Calzados/main/logo_reporte_02.png
 -- SELECT * FROM empresa;
+

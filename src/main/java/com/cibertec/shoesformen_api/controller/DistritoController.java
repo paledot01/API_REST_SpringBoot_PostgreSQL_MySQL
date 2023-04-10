@@ -26,12 +26,12 @@ public class DistritoController {
     private DistritoRepository distritoRepo;
 
 
-    @GetMapping()
-    public List<Distrito> all() {
-        return distritoRepo.findAll();
-    }
+//    @GetMapping() // LISTAR -> SIN PAGINACION
+//    public List<Distrito> all() {
+//        return distritoRepo.findAll();
+//    }
 
-    @GetMapping("/list")
+    @GetMapping() // LISTA -> CON PAGINACION
     public ResponseEntity<List<Distrito>> getAllEmployees(
             @RequestParam(defaultValue = "0") Integer pageNo,
             @RequestParam(defaultValue = "3") Integer pageSize,
