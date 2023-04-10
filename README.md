@@ -1,4 +1,4 @@
-# Información
+## Información
 La API contiene:
 - CRUD de la entidad Empleado con Reportes en PDF y EXCEL.
 - Validaciones y Manejo de Errores, con respuesta en Json y código de estado personalizados para cada error.
@@ -13,6 +13,8 @@ Credenciales iniciales:
 ![][img_1]
 
 [img_1]: ./screenshot/img01_BD.png
+
+---
 
 ## Listar Empleado
 Para listar los empleados registrados podemos usar de manera opcional los parametros:
@@ -62,6 +64,82 @@ Response: `Estatus code: 200 OK`
     // ...
 ]
 ```
+---
+## Registrar Empleado
+Para registrar un empleado, no se incluye el "codEmpleado" ni "roles" porque estos se obtienen de manera interna. Los campos "dni", "direccion", "telefono" y "email" son opcionales, pero si los incluimos en el Body deberan cumplir las resticciones respectivas.
+
+Request: 
+```
+[ POST ]  http://localhost:8080/empleados
+```
+```
+{
+	"codDistrito":  "DI02",
+	"codEstado":    "ES2",
+	"nombre":       "mateo",
+	"apellidos":    "Castillo",
+	"dni":          "22224444",
+	"direccion":    "Av. Carlos Izaguirre 233",
+	"telefono":     "3333444",
+	"email":        "mateoC@gmail.com",
+	"usuario":      "mateoC",
+	"contrasena":   "123"
+}
+```
+Response: `Estatus code: 201 Created`
+```
+{
+    // ... Todo el Empleado con mismo formato que se muestra al "Listar"
+}
+```
+---
+## Actualizar Empleado
+Para actualizar un empleado enviamos solo los campos que queremos modificar. Estos datos enviados tambien deben de cumplir con las restricciones
+
+Request: 
+```
+[ PUT ]  http://localhost:8080/empleados/EM10003
+```
+```
+{
+    "codDistrito":  "DI05",
+    "dni":          "11115555",
+    "email":        "mateo@gmail.com"
+}
+```
+Response: `Estatus code: 200 OK`
+```
+{
+    // ... Todo el Empleado actualizado con mismo formato que se muestra al "Listar"
+}
+```
+---
+## Eliminar Empleado
+Para eliminar un empleado solo enviamos en la URL el codigo de un Empleado que se encuentre registrado.
+
+Request: 
+```
+[ DELETE ]  http://localhost:8080/empleados/EM10003
+```
+Response: `Estatus code: 200 OK`
+
+#
+## Generar Reporte Empleado en PDF
+
+Request: 
+```
+[ GET ]  http://localhost:8080/empleados/rpt_PDF
+```
+Response: `Estatus code: 200 OK`
+
+## Generar Reporte Empleado en EXCEL
+
+Request: 
+```
+[ GET ]  http://localhost:8080/empleados/rpt_EXCEL
+```
+Response: `Estatus code: 200 OK`
+
 
 ---
 ### Herramientas utilizadas:
@@ -75,8 +153,9 @@ Response: `Estatus code: 200 OK`
 
 ### Tecnologias y versiones:
 - OpenJDK 17 [ Amazon Corretto 17.0.5.8.1 LTS ]
-- Sprint Boot [ 3.0.5 ] 
 - Apache Maven [ 3.0.1 ]
+- Sprint Boot [ 3.0.5 ] 
+- Spring Security
 - Hibernate (ORM)
 - JPQL
 - Lombok
