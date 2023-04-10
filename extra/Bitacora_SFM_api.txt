@@ -1,0 +1,114 @@
+empresa(3)   -> EP1
+
+estado(3)    -> ES1
+distrito(4)  -> DI01
+moneda(4)    -> MN01
+talla(4)     -> TL01
+color(4)     -> CR01
+categoria(4) -> CT01
+estilo(4)    -> ET01
+rol(4)       -> RL01
+empleado(7)  -> EM10001
+marca(7)     -> MA10001
+modelo(7)    -> MD10001
+calzado(8)   -> CZ100001
+cliente(8)   -> CL100001
+boleta(8)    -> BL100001
+
+
+
+BASE DE DATOS
+
+--> utilizar una llave primaria compuesta como llave foranea [ https://stackoverflow.com/questions/10565846/use-composite-primary-key-as-foreign-key ]
+                                                             [ https://es.stackoverflow.com/questions/198599/como-asignar-una-llave-primaria-compuesta-como-llave-foranea-en-otra-tabla-con ]
+--> relacion entre producto-talla-color [ https://stackoverflow.com/questions/31747273/mysql-database-to-store-product-color-size-and-stock ]
+--> agrupacion de una llave compuesta [ https://es.stackoverflow.com/questions/404584/error-en-postgresql-no-hay-restricci%C3%B3n-unique-que-coincida-con-las-columnas-dad ]
+--> UPDATE-JOIN actualizar datos de una tabla en funcion de los valores de otra tabla [ https://www.postgresqltutorial.com/postgresql-tutorial/postgresql-update-join/ ]
+	
+
+	Importante: cuando pasa una llave a otra tabla como llave foranea esta TABLA_1 debe verificar que dicha llave sea unica, porlo que si la tabla de donde proviene la llave solo
+                    tiene una sola llave primaria no tendremos que hacer nada por defecto esa llave es unica, pero que pasa si la otra tabla(TABLA_2) tiene una llave compuesta por 2 o 
+                    mas llaves primarias, en este caso podemos agregar la restriccion UNIQUE a todos las llaves primarias que tiene(EN TABLA_2), pero al registrar estas 
+                    llaves(EN TABLA_1) deben respetar que sean UNICAS de manera individual lo cual en la mayoria de los casos no es lo que se necesita. La mejor seria agrupar 
+                    (EN TABLA_1) esta llave compuesta para que se identifique ambos valores como una sola llave y cuyo valor "en conjunto" es UNICO asi:
+
+                    CONSTRAINT fk_calzado1 FOREIGN KEY(cod_modelo,cod_color) REFERENCES modelo_color(cod_modelo,cod_color) ON DELETE CASCADE
+
+                    ahora sabemos que una tabla intermedia que tiene como identificador una llave compuesta(2 o mas llaves primarias) puede pasar a otra como llave foranea, PERO 
+                    para esto tenemos que enviar todas estas llaves a la otra tabla lo cual no es conveniente cuando se tiene más de 3 llaves primarias, para esto podemos crear 
+                    un campo opcional que tambien sera identificado como llave primaria y será SOLO esta la que pasará a la otra tabla como identificador de esta tabla intermedia, 
+                    para esto será necesario que identifiquemos adicionalmente este campo nuevo como UNIQUE ademas del PRIMARY KEY. Esto es necesario porque la tabla intermedia 
+                    tendra multiples llaves primarias y al pasar SOLO un PK nada garantiza la UNICIDAD de los campos.
+
+--> utilizar multiples Bases de Datos en un mismo proyecto [ https://www.baeldung.com/spring-boot-configure-multiple-datasources ]
+
+	1. en "application.properties" configurar las dos conexiones en la base de datos:
+		
+		psql.url=jdbc:postgresql://localhost:5432/bd_sfm_psql
+		psql.username=postgres
+		psql.password=12345
+		psql.driverClassName=org.postgresql.Driver
+
+		psql.hikari.connectionTimeout=44444
+
+		msql.url=jdbc:mysql://localhost:3306/bd_sfm_mysql
+		msql.username=root
+		msql.password=12345
+		msql.driverClassName=com.mysql.cj.jdbc.Driver
+
+		-> "psql" y "msql" son dos alias que se colocan solo para diferenciar las dos conexiones, estas las usaremos en el siguiente paso 
+		   para generar las conexiones.
+
+	2. se debe crear un archivo de configuracion PARA CADA Base de Datos que contendra 4 metodos:
+		a. XEntityManagerFactory --> el que verificara el mapeo de la entidades para que coincidan con la de la base de datos
+		b. XTransactionManager ----> el que verificara las transacciones
+		c. XDataSource + XDataSourceProperties ----> los que conectaran con la base de datos en SI, aca necesitaremos los alias "psql","msql"
+
+--> Jasper Studio
+	- IMAGEN URL: si la imagen ya esta conectado a un parametro de tipo String, esta imagen se podra cargar tanto con una ubicacion de la imagen 
+                      dentro del proyecto, como una direccion URL que de la imagen en internet.
+
+--> Implementar seguridad Basica:
+	1. implementar las 2 dependencias en el pom
+	2. clase empleadoDetails service.
+	3. securityconfig -> principal
+	4. empleadoServicioImpl -> codificar el password, para registrar pass codificado
+
+
+
+
+
+
+--> Documentar una API
+	0. https://springdoc.org/#Introduction
+	0. https://editor.swagger.io/
+	1. https://www.youtube.com/watch?v=U11UChfhdhI&ab_channel=TodoTIC
+	2. https://www.youtube.com/watch?v=7ryyEjt2RDw&ab_channel=LaMalditaProgramadora
+	3. https://www.youtube.com/watch?v=SdsaZ-t1QwA&ab_channel=MoonCode
+	4. https://www.youtube.com/watch?v=-SzKqwgPTyk&ab_channel=SACAViXTech
+
+-> EXCEPCION:
+	- para crear excepciones personalizadas estas pueden extender de RuntimeException o Exception, la primera extiende de la
+          segunda por lo que funciona con ambas, una diferencia es que si usamos la 2da necesitaremos declarar el Throws en el metodo 
+          que contiene el codigo de posible excepcion, pero si usamos la 1era ya NO, bastará con lanzar el constructor de la clase 
+          excepcion creada.
+
+
+--> Paginas con API REST de referencia:
+	1. https://spring.io/guides/tutorials/rest/
+	2. https://www.nigmacode.com/java/crear-api-rest-con-spring/
+	3. https://www.makeuseof.com/rest-api-spring-boot-create/
+	4. https://www.appsdeveloperblog.com/many-to-many-relationship-in-spring-boot-rest-jpa/
+
+--> Otras:
+	1. https://www.baeldung.com/spring-response-entity
+	2. https://fakeapi.platzi.com/en/rest/products
+	3. https://app.quicktype.io/
+	4. https://json2csharp.com/code-converters/json-to-pojo
+	5. https://www.moesif.com/blog/technical/api-design/Which-HTTP-Status-Code-To-Use-For-Every-CRUD-App/
+
+--> Temitas por revisar
+	1. BeanUtils.copyP -> copiar propiedades de un objeto a otro objeto.
+		- ejempo [ https://itecnote.com/tecnote/java-jpa-update-only-specific-fields/ ]
+	2. @DynamicUpdate
+	3. HTTP PUT vs HTTP PATCH

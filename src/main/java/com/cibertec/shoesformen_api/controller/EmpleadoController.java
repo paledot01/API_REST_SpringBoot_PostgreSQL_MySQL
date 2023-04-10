@@ -46,7 +46,7 @@ public class EmpleadoController {
     public ResponseEntity<List<Empleado>> getAll(
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "3") Integer size,
-            @RequestParam(defaultValue = "nombre") String sort)
+            @RequestParam(defaultValue = "codEmpleado") String sort)
     {
         List<Empleado> lista = empleadoServ.listar(page, size, sort);
         return new ResponseEntity<List<Empleado>>(lista, HttpStatus.OK);
