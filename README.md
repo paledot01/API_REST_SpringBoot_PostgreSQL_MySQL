@@ -1,3 +1,17 @@
+# Información
+La API contiene:
+- CRUD de la entidad Empleado con Reportes en PDF y EXCEL.
+- Validaciones y Manejo de Errores, con respuesta en Json y código de estado personalizados para cada error.
+- Seguridad basica con Spring Security (Autorización y Autenticación por ROLES).
+- Conexion a dos Bases de Datos en simultáneo (PostgreSQL y MySQL).
+- Paginación.
+
+
+
+![][img_1]
+
+[img_1]: ./screenshot/img01_BD.png
+
 ## Listar Empleado
 Para listar los empleados registrados podemos usar de manera opcional los parametros:
 - page : página que se mostrará.
@@ -47,7 +61,5 @@ Response: `Estatus code: 200 OK`
 ]
 ```
 
-![][img_1]
 
-[img_1]: ./screenshot/img01_BD.png
 
